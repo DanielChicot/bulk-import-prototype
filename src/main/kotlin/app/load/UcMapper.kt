@@ -1,4 +1,4 @@
-package app.load.mapper
+package app.load
 
 import org.apache.hadoop.hbase.KeyValue
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable
@@ -10,6 +10,7 @@ import org.apache.hadoop.mapreduce.Mapper
 class UcMapper: Mapper<LongWritable, Text, ImmutableBytesWritable, KeyValue>() {
 
     override fun map(key: LongWritable, value: Text, context: Context) {
+        println("===================> mapping '$value'.")
         hKey(value)?.let { context.write(it, keyValue(it, value)) }
     }
 
@@ -20,8 +21,7 @@ class UcMapper: Mapper<LongWritable, Text, ImmutableBytesWritable, KeyValue>() {
                 }
             }
 
-    // can set timestamp here as well
     private fun keyValue(key: ImmutableBytesWritable, value: Text) =
-        KeyValue(key.get(), Bytes.toBytes("cf"), Bytes.toBytes("record"), Bytes.toBytes(value.toString()))
-
+        KeyValue(key.get(), Bytes.toBytes("cf"), Bytes.toBytes("record"),
+            Bytes.toBytes(value.toString()))
 }

@@ -2,6 +2,7 @@ plugins {
     java
     kotlin("jvm") version "1.4.10"
     application
+    id("com.github.johnrengelman.shadow") version "5.1.0"
 }
 
 group = "org.example"
@@ -20,12 +21,13 @@ dependencies {
     //implementation("org.jetbrains.kotlin:kotlin-stdlib:1.4.10")
 }
 
+
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
 application {
-    mainClassName = "app.load.Load"
+    mainClassName = "app.load.LoadKt"
 }
 
 tasks {
@@ -34,12 +36,5 @@ tasks {
     }
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
-    }
-}
-
-tasks.withType(Jar::class) {
-    manifest {
-        attributes["Class-Path"] = configurations.runtimeClasspath.get().files.joinToString(" ") { it.name }
-        attributes["Main-Class"] = "app.load.LoadKt"
     }
 }
