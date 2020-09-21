@@ -13,14 +13,13 @@ class UcMapper: Mapper<LongWritable, Text, ImmutableBytesWritable, KeyValue>() {
         hKey(value)?.let { context.write(it, keyValue(it, value)) }
     }
 
-    private fun hKey(value: Text): ImmutableBytesWritable?
-            = Regex("""^\d+""").find(value.toString())?.let {
+    private fun hKey(value: Text): ImmutableBytesWritable? =
+            Regex("""^\d+""").find(value.toString())?.let {
                 ImmutableBytesWritable().apply {
                     set(Bytes.toBytes(it.value))
                 }
             }
 
     private fun keyValue(key: ImmutableBytesWritable, value: Text) =
-        KeyValue(key.get(), Bytes.toBytes("cf"), Bytes.toBytes("record"),
-            Bytes.toBytes(value.toString()))
+            KeyValue(key.get(), Bytes.toBytes("cf"), Bytes.toBytes("record"), Bytes.toBytes(value.toString()))
 }
