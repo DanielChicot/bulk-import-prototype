@@ -10,7 +10,6 @@ import org.apache.hadoop.mapreduce.Mapper
 class UcMapper: Mapper<LongWritable, Text, ImmutableBytesWritable, KeyValue>() {
 
     override fun map(key: LongWritable, value: Text, context: Context) {
-        println("===================> mapping '$value'.")
         hKey(value)?.let { context.write(it, keyValue(it, value)) }
     }
 
