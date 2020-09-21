@@ -11,7 +11,6 @@ import org.apache.hadoop.hbase.mapreduce.HFileOutputFormat2
 import org.apache.hadoop.hbase.mapreduce.LoadIncrementalHFiles
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.apache.hadoop.util.GenericOptionsParser
 
@@ -24,8 +23,10 @@ fun main(args: Array<String>) {
                     HFileOutputFormat2.configureIncrementalLoad(job, table, connection.getRegionLocator(tableName()))
                 }
             }
-            arguments(args).map(::Path).also { (inputFile, outputDirectory) ->
-                FileInputFormat.addInputPath(job, inputFile)
+
+            arguments(args).map(::Path).also { paths ->
+                paths.drop(1).forEach { inputFile -> FileInputFormat.addInputPath(job, inputFile) }
+                val outputDirectory = paths[0]
                 FileOutputFormat.setOutputPath(job, outputDirectory)
                 job.waitForCompletion(true)
                 with (LoadIncrementalHFiles(configuration)) {
@@ -44,8 +45,7 @@ private fun jobInstance(configuration: Configuration) =
         mapperClass = UcMapper::class.java
         mapOutputKeyClass = ImmutableBytesWritable::class.java
         mapOutputValueClass = KeyValue::class.java
-        inputFormatClass = TextInputFormat::class.java
+        inputFormatClass = UcInputFormat::class.java
     }
-
 
 private fun tableName() = TableName.valueOf("epl")

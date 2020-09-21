@@ -16,6 +16,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.apache.hbase:hbase-client:1.4.13")
     implementation("org.apache.hbase:hbase-server:1.4.13")
+
 }
 
 
