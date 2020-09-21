@@ -7,9 +7,8 @@ import org.apache.hadoop.mapreduce.InputSplit
 import org.apache.hadoop.mapreduce.RecordReader
 import org.apache.hadoop.mapreduce.TaskAttemptContext
 import org.apache.hadoop.mapreduce.lib.input.FileSplit
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import java.io.*
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.util.zip.GZIPInputStream
 
 class UcRecordReader: RecordReader<LongWritable, Text>() {
