@@ -14,39 +14,27 @@ import java.util.zip.GZIPInputStream
 
 class UcRecordReader: RecordReader<LongWritable, Text>() {
 
-    private var input: BufferedReader? = null
-    private var value: Text? = null
-
-    override fun initialize(split: InputSplit, context: TaskAttemptContext) {
-        split.locations.forEach {
-            logger.info("LOCATION: '$it'")
+    override fun initialize(split: InputSplit, context: TaskAttemptContext) =
+        (split as FileSplit).path.let { path ->
+            path.getFileSystem(context.configuration).let { fs ->
+                input = BufferedReader(InputStreamReader(GZIPInputStream(fs.open(path))))
+            }
         }
-        val file = (split as FileSplit).path
-        val fs = file.getFileSystem(context.configuration)
-        input = BufferedReader(InputStreamReader(GZIPInputStream(fs.open(file))))
-    }
 
+    override fun nextKeyValue() = hasNext(input?.readLine())
     override fun close() = IOUtils.closeStream(input)
-
-
-    override fun nextKeyValue(): Boolean {
-        val line = input?.readLine()
-        return if (line != null) {
-            value = Text(line)
-            true
-        }
-        else {
-            false
-        }
-    }
-
     override fun getCurrentKey(): LongWritable = LongWritable()
-
     override fun getCurrentValue(): Text? = value
-
     override fun getProgress(): Float = .5f
 
-    companion object {
-        val logger: Logger = LoggerFactory.getLogger(UcRecordReader::class.java)
-    }
+    private fun hasNext(line: String?) =
+            if (line != null) {
+                value = Text(line)
+                true
+            } else {
+                false
+            }
+
+    private var input: BufferedReader? = null
+    private var value: Text? = null
 }
